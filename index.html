@@ -531,7 +531,7 @@ ip6tables -A INPUT -p tcp ! --dport 22 -j DROP
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-06-30 14:16:12" itemprop="dateModified" datetime="2023-06-30T14:16:12+08:00">2023-06-30</time>
+                <time title="修改时间：2023-07-03 16:24:03" itemprop="dateModified" datetime="2023-07-03T16:24:03+08:00">2023-07-03</time>
               </span>
 
           
@@ -554,7 +554,10 @@ ip6tables -A INPUT -p tcp ! --dport 22 -j DROP
 <h2 id="安装openssh"><a href="#安装openssh" class="headerlink" title="安装openssh"></a>安装openssh</h2><p>在桌面右键，选择在终端中打开。并在终端中输入以下命令。#后的内容为注释，不需要输入，过程中需要用到网络。<br><code>sudo apt-get update</code>#更新软件商店，sudo命令会要求输入密码，密码为安装linux时的密码。<br><code>sudo apt-get install openssh-server </code>#安装openssh-server</p>
 <h2 id="远程登陆-windows"><a href="#远程登陆-windows" class="headerlink" title="远程登陆-windows"></a>远程登陆-windows</h2><p>使用windows电脑远程控制linux</p>
 <ol>
-<li>获取linux的IP地址，将windows和linux连接到同一局域网下，windows电脑打开路由器或者光猫的管理界面，找到linux的IP地址，并设置ip和mac绑定。</li>
+<li>将服务器连接到光猫后面，在光猫上找到光猫的ip地址比如<code>192.168.1.1</code>和光猫的型号。</li>
+<li>百度搜索该光猫型号的超级密码，搜不到就问运营商，问装宽带的师傅。</li>
+<li>将windows和linux连接到同一局域网下，打开浏览器输入光猫的ip地址，输入找到的超级密码和账户，登录。</li>
+<li>找到linux服务器的IP地址，并设置ip和mac绑定，目的就是让服务器的IP地址不会发生改变。</li>
 <li>在windows上按下win+R打开运行，输入<code>cmd</code>并运行。</li>
 <li>在cmd窗口中输入<code>ssh user@ip</code>,其中user是安装系统时的用户名，ip是linux的IP地址，例如192.168.1.2，需要根据自己的情况修改命令。</li>
 <li>第一次连接时会要求核对服务器公钥，输入<code>yes</code>后回车</li>
