@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/cat2.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/cat1.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="文件共享管理本篇章介绍如何让哪些文件被共享，而哪些文件不被共享。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多用户管理">
+<meta property="og:url" content="http://example.com/2023/07/04/04%E5%A4%9A%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86/index.html">
+<meta property="og:site_name" content="Haojie">
+<meta property="og:description" content="文件共享管理本篇章介绍如何让哪些文件被共享，而哪些文件不被共享。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-04T00:02:00.000Z">
+<meta property="article:modified_time" content="2024-09-05T05:16:59.506Z">
+<meta property="article:author" content="Haojie">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2023/07/04/04%E5%A4%9A%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/love.js"></script>
+
+  <title>多用户管理 | Haojie</title><meta name="robots" content="noindex">
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Haojie</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-rss">
+
+    <a href="/atom.xml" rel="section"><i class="fa fa-rss fa-fw"></i>RSS</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/04/04%E5%A4%9A%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/smile.jpg">
+      <meta itemprop="name" content="Haojie">
+      <meta itemprop="description" content="我的电脑折腾记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Haojie">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          多用户管理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-07-04 08:02:00" itemprop="dateCreated datePublished" datetime="2023-07-04T08:02:00+08:00">2023-07-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-09-05 13:16:59" itemprop="dateModified" datetime="2024-09-05T13:16:59+08:00">2024-09-05</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="文件共享管理"><a href="#文件共享管理" class="headerlink" title="文件共享管理"></a>文件共享管理</h1><p>本篇章介绍如何让哪些文件被共享，而哪些文件不被共享。</p>
+<span id="more"></span>
+<h2 id="文件共享管理-1"><a href="#文件共享管理-1" class="headerlink" title="文件共享管理"></a>文件共享管理</h2><p>默认的共享的目录一般都是家目录，但是如果加了一块硬盘，需要共享硬盘内的文件，可以这样做  </p>
+<ol>
+<li>使用<code>sudo fdisk -l</code>命令查看有哪些存储器。例如&#x2F;dev&#x2F;nvme0n1是nvme固态硬盘，&#x2F;dev&#x2F;nvme0n1p1是这个固态硬盘的第一个分区，&#x2F;dev&#x2F;nvme0n1p2是第二个分区，&#x2F;dev&#x2F;sda是sata硬盘或者u盘，&#x2F;dev&#x2F;sda1是硬盘的第一个分区，&#x2F;dev&#x2F;sda2是第二个分区，&#x2F;dev&#x2F;sdb是第二个硬盘 </li>
+<li>使用<code>cd</code>命令进入到家目录</li>
+<li>使用<code>pwd</code>命令获取当前目录的绝对路径</li>
+<li>使用<code>mkdir storage</code>命令创建一个名为storage的文件夹</li>
+<li>使用<code>ls</code>命令列出当前目录下的文件和文件夹，查看storage目录有没有被创建</li>
+<li>使用<code>sudo mount /dev/sda1 storage</code>将机械硬盘的第一个分区&#x2F;dev&#x2F;sda1挂载到storage</li>
+<li>使用<code>sudo chown -R user:user storage</code>将storage目录和目录的所有文件的所有者更改为user，user是用户名，不执行这一步可能用户没有storage的写入权限</li>
+<li>使用<code>cd storage</code>进入storage目录</li>
+<li>使用<code>ls</code>列出storage下的所有文件，即机械硬盘第一分区下的所有文件，由此我们已经可以在sftp、ftp、smb三种共享中访问到storage下的文件了</li>
+<li>使用<code>sudo vim /etc/rc.local</code>编辑开机启动脚本，需要已经在上一篇中<a href="2023/07/02/02ipv6%E8%BF%9C%E7%A8%8B%E8%AE%BF%E9%97%AE">02ipv6远程访问</a>完成开机启动脚本相关设置，添加一行<code>mount /dev/sda1 /home/user/storage</code>其中&#x2F;dev&#x2F;user是家目录的绝对路径。</li>
+</ol>
+<h2 id="多用户管理"><a href="#多用户管理" class="headerlink" title="多用户管理"></a>多用户管理</h2><p>如果这个服务器想要让家人朋友也能用，但是又要限制对方能够访问的文件可以这样做。</p>
+<ol>
+<li>使用<code>sudo su</code>命令切换到root用户，sudo命令的意思是以root用户执行后面的命令，su命令的意思是切换用户，默认为root用户。root用户拥有linux系统的最高权限，root用户也是很危险的，操作不当容易对系统造成损坏。</li>
+<li>使用<code>useradd user1 -s /bin/bash</code>命令创建一个名为user1的用户</li>
+<li>使用<code>mkdir /home/user1</code>命令为user1创建家目录</li>
+<li>使用<code>chown user1:user1 /home/user1</code>命令将&#x2F;home&#x2F;user1目录的所有者和群组改为user1，因为mkdir命令是以root用户运行的，所以创建的文件夹默认所有者为root，user1是无法访问root创建的文件夹的。</li>
+<li>使用<code>cd /home</code>命令进入&#x2F;home目录</li>
+<li>使用<code>ls -l</code>命令查看当前目录下的文件和文件，并列出详细信息</li>
+<li>使用<code>passwd user1</code>为user1设置用户密码，有了用户密码，ftp和sftp就可以user1用户登录了</li>
+<li>使用<code>smbpasswd -a user1</code>命令为user1设置smb密码</li>
+<li>使用<code>su user1</code>可以切换到user1用户，以user1用户的身份运行命令，user1默认是无法使用sudo命令的，如果能用sudo命令则就相当于能切换到root，就有了计算机的最高权限。</li>
+<li>使用<code>exit</code>命令可以退出当前用户，退回到上一个用户。</li>
+<li>如果需要为user1挂载硬盘，参考上一节。</li>
+</ol>
+<h2 id="权限管理"><a href="#权限管理" class="headerlink" title="权限管理"></a>权限管理</h2><p>如果一些文件需要多个用户共同访问，则需要设置文件的权限。<br>使用<code>ls -l</code>命令列出当前目录下的文件和文件夹，可能会出现以下信息</p>
+<pre><code>drwxr-xr-x  2 user user     4096 6月  30 11:24 Desktop
+-rwx------  1 user user      212 5月  31 07:41 ip.sh
+</code></pre>
+<p>第一位d表示文件夹，-表示文件，然后是r表示读取、w表示写入、x表示执行，rwx有三组，分别表示用户、用户组、其他用户的读、写、执行权限，如果在相应位置的rwx变成了-则表示没有这个权限。例如drwxr-xr-x表示这是一个文件夹，用户有读、写、执行权限，用户组有读、执行权限，其他用户有读取、执行权限。<br>随后的user user分别表示用户和用户组，即用户为user，用户组为user。<br>4094和212表示文件占用的大小，单位是字节，注意4094只表示文件夹本身的大小，不包含文件夹内文件的大小。<br>随后是文件(夹)创建的时间，最后是文件(夹)的名字。</p>
+<ol>
+<li>使用<code>sudo chown user1:user1 Desktop</code>将Desktop文件夹的所有者和群组改为user1和user1，若带有-R选项则表示递归执行，操作将对Desktop下的所有文件和文件夹生效</li>
+<li>使用<code>sudo chmod 0755 ip.sh</code>将ip.sh的权限设置为用户有读、写、执行权限，用户组有读、执行权限，其他用户有读取、执行权限。读为4，写为2，执行为1，所以所有者有读、写、执行权限为4+2+1&#x3D;7，用户组和其他用户为4+1&#x3D;5。ip.sh文件原本的所有者是user，当user执行chmod时可以不加sudo。除了root和所有者外其他用户无法更改文件(夹)的权限，除非有sudo，以root身份运行。</li>
+<li>如果需要将以文件夹设置为user可读写，user1只读，可以用户为user，文件权限为0755。</li>
+<li>如果一个文件夹需要让所有用户可读写，设置权限为0777设置共享会有一些问题，例如文件夹所有者为user，然后user1在文件夹内创建了一个文件，那么这个文件的所有者就是user1，且默认权限为0755，user就没有这个文件的写入权限。可以采用格式化硬盘的方式，采用ntfs、exfat、fat32格式。这些格式不含有linux权限信息，对所有用户都是可读写的。</li>
+</ol>
+<h2 id="格式化硬盘"><a href="#格式化硬盘" class="headerlink" title="格式化硬盘"></a>格式化硬盘</h2><ol>
+<li>使用fdisk对硬盘分区，运行<code>sudo fdisk /dev/sda</code>命令选中&#x2F;dev&#x2F;sda，此时按下d可以删除分区，按下n可以新建分区，按下w可以保存并退出，按下q可以退出并不保存，这边创建两个分区。</li>
+<li>使用<code>sudo mkfs.ext4 /dev/sda1</code>可以将&#x2F;dev&#x2F;sda1格式化为ext4分区，ext4分区包含linux权限信息。</li>
+<li>使用<code>sudo mkfs.exfat /dev/sda2</code>可以将&#x2F;dev&#x2F;sda1格式化为exfat分区，exfat分区不包含linux权限信息。</li>
+</ol>
+<h2 id="多用户共享文件"><a href="#多用户共享文件" class="headerlink" title="多用户共享文件"></a>多用户共享文件</h2><p>多用户分配不同的文件共享权限，参考以下命令，需要以root用户执行。</p>
+<pre><code>#ext4分区1由user完全控制
+mkdir /home/user/partition_1 
+mount /dev/sda1 /home/user/partition_1
+chown -R user:user /home/user/partition_1
+#在分区1中创建一个user1只读的文件夹
+mkdir  /home/user/partition_1/read_user1 
+chown user:user /home/user/partition_1/read_user1
+chmod 0755 /home/user/partition_1/read_user1
+mkdir /home/user1/read_only
+mount --bind /home/user/partition_1/read_user1 /home/user1/read_only
+#exfat分区2由user完全控制
+mkdir /home/user/partition_2 
+mount /dev/sda2 /home/user/partition_2
+#分区2中创建一个user1可读写的文件夹
+mkdir  /home/user/partition_2/public 
+mkdir /home/user1/public
+mount --bind /home/user/partition_2/public /home/user1/public
+</code></pre>
+<p>如果要开机自启，则运行一遍上面的命令后，将mount有关的命令放到&#x2F;etc&#x2F;rc.local<br>运行<code>sudo vim /etc/rc.local</code>，添加以下内容</p>
+<pre><code>mount /dev/sda1 /home/user/partition_1
+mount --bind /home/user/partition_1/read_user1 /home/user1/read_only
+mount /dev/sda2 /home/user/partition_2
+mount --bind /home/user/partition_2/public /home/user1/public
+</code></pre>
+<!-- flag of hidden posts -->
+    </div>
+
+    
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>再接再厉-------------</div>
+    
+</div>
+
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E7%AE%A1%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">文件共享管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%85%B1%E4%BA%AB%E7%AE%A1%E7%90%86-1"><span class="nav-number">1.1.</span> <span class="nav-text">文件共享管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86"><span class="nav-number">1.2.</span> <span class="nav-text">多用户管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%83%E9%99%90%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">权限管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96%E7%A1%AC%E7%9B%98"><span class="nav-number">1.4.</span> <span class="nav-text">格式化硬盘</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%94%A8%E6%88%B7%E5%85%B1%E4%BA%AB%E6%96%87%E4%BB%B6"><span class="nav-number">1.5.</span> <span class="nav-text">多用户共享文件</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Haojie"
+      src="/images/smile.jpg">
+  <p class="site-author-name" itemprop="name">Haojie</p>
+  <div class="site-description" itemprop="description">我的电脑折腾记录</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/haojie7366" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;haojie7366" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:haojie7366@gmail.com" title="E-Mail → mailto:haojie7366@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Haojie</span>
+</div><div>
+<!--添加网站运行时间-->
+<span>小破站已经在风雨中度过了</span>
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    function createtime() {
+        const startTime = '06/30/2023 00:00:00',
+            start = new Date(startTime)
+        let mill = new Date() - start,
+            seconds = Math.floor(mill / 1000),
+            mins = Math.floor(seconds / 60),
+            hours = Math.floor(mins / 60),
+            days = Math.floor(hours / 24)
+        const time = {
+            seconds: seconds - mins * 60,
+            mins: mins - hours * 60,
+            hours: hours - days * 24,
+        }
+        for (const k in time) {
+            time[k] = `${time[k]}`.padStart(2, '0')
+        }
+        document.getElementById("timeDate").innerHTML = ` ${days} 天`
+        document.getElementById("times").innerHTML = ` ${time.hours} 小时 ${time.mins} 分 ${time.seconds} 秒`
+    }
+    setInterval(createtime, 500)
+</script>
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>
+

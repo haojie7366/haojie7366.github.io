@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/cat2.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/cat1.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":true,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="一、工作原理自动还原是划分了三个系统空间，一个空间用于存放系统备份，另外两个空间存放运行的系统。    开机后，进入系统1，然后将系统备份还原到系统2，并设置下一次进入系统2。   再次开机后进入系统2，然后将系统备份还原到系统1，并设置下一次进入系统1。  这样每次开机后都可以进入一个新的系统。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Windows系统自动还原">
+<meta property="og:url" content="http://example.com/2023/07/16/16Windows%E7%B3%BB%E7%BB%9F%E8%87%AA%E5%8A%A8%E8%BF%98%E5%8E%9F/index.html">
+<meta property="og:site_name" content="Haojie">
+<meta property="og:description" content="一、工作原理自动还原是划分了三个系统空间，一个空间用于存放系统备份，另外两个空间存放运行的系统。    开机后，进入系统1，然后将系统备份还原到系统2，并设置下一次进入系统2。   再次开机后进入系统2，然后将系统备份还原到系统1，并设置下一次进入系统1。  这样每次开机后都可以进入一个新的系统。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/images/wepe_download.png">
+<meta property="og:image" content="http://example.com/images/wepe_install_U.png">
+<meta property="og:image" content="http://example.com/images/%E5%88%9B%E5%BB%BAVHD.png">
+<meta property="og:image" content="http://example.com/images/%E9%87%8A%E6%94%BE%E6%98%A0%E5%83%8FD.png">
+<meta property="og:image" content="http://example.com/images/%E5%BC%95%E5%AF%BC-vhd.png">
+<meta property="og:image" content="http://example.com/images/%E7%B3%BB%E7%BB%9F%E8%BF%98%E5%8E%9F%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="http://example.com/images/bcd%E4%BF%AE%E6%94%B9%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA.png">
+<meta property="og:image" content="http://example.com/images/setdir.png">
+<meta property="og:image" content="http://example.com/images/%E7%94%A8%E6%88%B7%E8%B4%A6%E6%88%B7%E6%8E%A7%E5%88%B6.png">
+<meta property="og:image" content="http://example.com/images/%E4%BF%9D%E5%AD%98%E7%9A%84%E6%96%87%E4%BB%B6.png">
+<meta property="og:image" content="http://example.com/images/%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8.png">
+<meta property="og:image" content="http://example.com/images/%E5%BB%B6%E9%95%BF%E7%B3%BB%E7%BB%9F%E6%9B%B4%E6%96%B0.png">
+<meta property="article:published_time" content="2023-07-16T00:02:00.000Z">
+<meta property="article:modified_time" content="2024-09-05T03:52:55.768Z">
+<meta property="article:author" content="Haojie">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/wepe_download.png">
+
+<link rel="canonical" href="http://example.com/2023/07/16/16Windows%E7%B3%BB%E7%BB%9F%E8%87%AA%E5%8A%A8%E8%BF%98%E5%8E%9F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/love.js"></script>
+
+  <title>Windows系统自动还原 | Haojie</title><meta name="robots" content="noindex">
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Haojie</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-rss">
+
+    <a href="/atom.xml" rel="section"><i class="fa fa-rss fa-fw"></i>RSS</a>
+
+  </li>
+        <li class="menu-item menu-item-schedule">
+
+    <a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>日程表</a>
+
+  </li>
+        <li class="menu-item menu-item-sitemap">
+
+    <a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a>
+
+  </li>
+        <li class="menu-item menu-item-commonweal">
+
+    <a href="/404/" rel="section"><i class="fa fa-heartbeat fa-fw"></i>公益 404</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/07/16/16Windows%E7%B3%BB%E7%BB%9F%E8%87%AA%E5%8A%A8%E8%BF%98%E5%8E%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/smile.jpg">
+      <meta itemprop="name" content="Haojie">
+      <meta itemprop="description" content="我的电脑折腾记录">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Haojie">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Windows系统自动还原
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-07-16 08:02:00" itemprop="dateCreated datePublished" datetime="2023-07-16T08:02:00+08:00">2023-07-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-09-05 11:52:55" itemprop="dateModified" datetime="2024-09-05T11:52:55+08:00">2024-09-05</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="一、工作原理"><a href="#一、工作原理" class="headerlink" title="一、工作原理"></a>一、工作原理</h2><p>自动还原是划分了三个系统空间，一个空间用于存放系统备份，另外两个空间存放运行的系统。  </p>
+<ol>
+<li>开机后，进入系统1，然后将系统备份还原到系统2，并设置下一次进入系统2。  </li>
+<li>再次开机后进入系统2，然后将系统备份还原到系统1，并设置下一次进入系统1。</li>
+</ol>
+<p>这样每次开机后都可以进入一个新的系统。</p>
+<span id="more"></span>
+<h2 id="二、工具准备"><a href="#二、工具准备" class="headerlink" title="二、工具准备"></a>二、工具准备</h2><ol>
+<li>下载Windows官方镜像<br>微软官方Windows10下载地址：<br><a target="_blank" rel="noopener" href="https://www.microsoft.com/zh-cn/software-download/windows10">https://www.microsoft.com/zh-cn/software-download/windows10</a><br>微软官方Windows11下载地址：<br><a target="_blank" rel="noopener" href="https://www.microsoft.com/zh-cn/software-download/windows11">https://www.microsoft.com/zh-cn/software-download/windows11</a><br>第三方下载地址：<a target="_blank" rel="noopener" href="https://next.itellyou.cn/">https://next.itellyou.cn/</a><br>第三方下载的也是官方镜像，需要配合迅雷下载，下载速度比官方镜像更快。</li>
+<li>Dism++: <a href="/images/Dism++.zip">点击下载</a></li>
+<li>BOOTICE: <a href="/images/BOOTICEx64.exe">点击下载</a></li>
+<li>延长系统更新时间脚本：<a href="/images/%E5%BB%B6%E9%95%BF%E7%B3%BB%E7%BB%9F%E6%9B%B4%E6%96%B0%E6%97%B6%E9%97%B4.reg">点击下载</a></li>
+<li>系统还原文件：<a href="/images/%E7%B3%BB%E7%BB%9F%E8%BF%98%E5%8E%9F.zip">点击下载</a></li>
+<li>推荐准备一个U盘，U盘内安装PE系统，在安装过程中出现意外也可以在PE中有修复系统的可能。<br>下载微PE：<a target="_blank" rel="noopener" href="https://www.wepe.com.cn/download.html">https://www.wepe.com.cn/download.html</a><br><img src="/images/wepe_download.png" alt="微PE下载"><br>选择最新版本的，下载64位版本，下载完成后打开，安装到U盘。<br><img src="/images/wepe_install_U.png" alt="微PE安装"></li>
+</ol>
+<h2 id="三、安装步骤"><a href="#三、安装步骤" class="headerlink" title="三、安装步骤"></a>三、安装步骤</h2><ol>
+<li>准备安装空间，分区内至少有120G的剩余空间。</li>
+<li>双击打开BOOTICE-磁盘镜像-创建VHD，输入文件位置和名字，例如<code>C:\Windows10.vhdx</code>,推荐复制粘贴，可以将C盘换成其他盘，设置虚拟硬盘的容量为40G。<br><img src="/images/%E5%88%9B%E5%BB%BAVHD.png" alt="创建VHD"></li>
+<li>挂载&#x2F;卸载VHD-选择刚刚创建的VHD-挂载</li>
+<li>此电脑右键-管理-磁盘管理，会弹出虚拟硬盘的初始化磁盘，点确定。</li>
+<li>在虚拟硬盘的空白空间内右键-新建简单卷，创建一个新的分区，分区格式为NTFS，记住盘符。</li>
+<li>解压缩Dism++,双击里面的Dism++x86，运行程序</li>
+<li>文件-释放映像，点第一个浏览，选择Windows系统镜像。</li>
+<li>点第二个浏览，选择新建的分区，完成后点确定，开始释放镜像。<br> <img src="/images/%E9%87%8A%E6%94%BE%E6%98%A0%E5%83%8FD.png" alt="释放映像"></li>
+<li>双击打开BOOTICE，选择BCD编辑—当前系统BCD-智能编辑模式—添加-新建Windows 7&#x2F;8&#x2F;8.1启动项</li>
+<li>编辑新建的引导，设备类型为VHD(X)，修改启动磁盘和启动分区为虚拟硬盘所在物理磁盘和物理分区，设备文件为<code>\Windows10.vhdx</code>，推荐复制粘贴，可以随意修改菜单标题，然后点保存当前系统设置<br><img src="/images/%E5%BC%95%E5%AF%BC-vhd.png" alt="新建引导"></li>
+<li>左侧框内选择新建的引导，设置为默认，超时时间可以设置为3秒，保存全局设置</li>
+<li>确认DISM++释放镜像已经成功后，重启电脑。</li>
+<li>跟随提示完成系统初始化设置。</li>
+<li>解压缩系统还原文件，将解压出来的文件和虚拟硬盘文件放到一起。<br><img src="/images/%E7%B3%BB%E7%BB%9F%E8%BF%98%E5%8E%9F%E6%96%87%E4%BB%B6.png" alt="系统还原文件"></li>
+<li>打开BOOTICE，BCD编辑-其他BCD文件，选择BCDto0，修改引导项Windows10(VHDX)的启动磁盘和启动分区。同样的操作，修改BCDto1和BCDto2。<br><img src="/images/bcd%E4%BF%AE%E6%94%B9%E7%A3%81%E7%9B%98%E5%88%86%E5%8C%BA.png" alt="bcd修改磁盘分区"></li>
+<li>编辑当前系统BCD，删除新建Windows10(VHDX)引导，重启进入原系统。</li>
+<li>进入原本的系统，右键to1，编辑，找到<code>set dir=C:</code>将盘符C和to1在当前系统所在的盘符一致，保存。如果保存失败，先另存为到桌面，然后复制替换。<br><img src="/images/setdir.png" alt="setdir"></li>
+<li>将虚拟硬盘<code>Windows10.vhdx</code>，重命名为<code>Windows10_0.vhdx</code>推荐复制粘贴，即使安装的系统是Windows8&#x2F;Windows11，也要重命名为<code>Windows10_0.vhdx</code></li>
+<li>运行to1，运行完成后会自动重启电脑。</li>
+<li>进入系统后，查看虚拟硬盘所在分区，会多出来一个<code>Windows10_1.vhdx</code>的文件，占用空间为40G，说明进入的是该虚拟硬盘中的系统，虚拟硬盘展开占用的全额空间。</li>
+<li>编辑to1or2，找到<code>set dir=E:</code>将盘符E和to1or2在当前系统所在的盘符一致，保存。如果保存失败，先另存为到桌面，然后复制替换。</li>
+<li>运行to1or2，运行成功后手动重启电脑。</li>
+<li>进入系统后，查看虚拟硬盘所在分区，会多出来一个<code>Windows10_2.vhdx</code>的文件，占用空间为40G，说明进入的是该虚拟硬盘中的系统。</li>
+<li>编辑to0，找到<code>set dir=E:</code>将盘符E和to0在当前系统所在的盘符一致，保存。如果保存失败，先另存为到桌面，然后复制替换。</li>
+<li>运行to0，运行完成后会自动重启电脑。</li>
+<li>进入系统后，查看虚拟硬盘所在分区，<code>Windows10_0.vhdx</code>的文件，占用空间为40G，说明进入的是该虚拟硬盘中的系统。</li>
+<li>搜索更改用户账户控制，改为从不通知。<br><img src="/images/%E7%94%A8%E6%88%B7%E8%B4%A6%E6%88%B7%E6%8E%A7%E5%88%B6.png" alt="用户账户控制"></li>
+<li>创建一个文件夹，发送到桌面快捷方式，用于在自动还原系统中，保存需要的文件。<br><img src="/images/%E4%BF%9D%E5%AD%98%E7%9A%84%E6%96%87%E4%BB%B6.png" alt="保存的文件"></li>
+<li>按下WIN+R，调出运行框，输入<code>shell:startup</code>，将to1or2脚本复制到弹出的文件夹内。<br><img src="/images/%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8.png" alt="开机启动"></li>
+<li>确保系统驱动已经安装完成，运行下载的延长系统更新时间脚本，运行完成后，打开设置-Windows更新-高级选项-暂停更新，将系统更新时间设置为最长3000天。<br><img src="/images/%E5%BB%B6%E9%95%BF%E7%B3%BB%E7%BB%9F%E6%9B%B4%E6%96%B0.png" alt="延长系统更新"></li>
+<li>手动重启电脑，进入原本的系统，此时如果不运行其他脚本，就可以一直使用原本的系统。</li>
+<li>运行to1，运行完成后会自动重启电脑。进入系统后，查看虚拟硬盘所在分区，<code>Windows10_1.vhdx</code>的文件，占用空间为40G，说明进入的是该虚拟硬盘中的系统。</li>
+<li>手动重启系统，进入系统后，查看虚拟硬盘所在分区，<code>Windows10_2.vhdx</code>的文件，占用空间为40G，说明进入的是该虚拟硬盘中的系统。</li>
+<li>至此自动还原安装成功。</li>
+</ol>
+<h2 id="四、使用方法"><a href="#四、使用方法" class="headerlink" title="四、使用方法"></a>四、使用方法</h2><ol>
+<li>从自动还原系统进入原本的系统，运行to0，进入<code>Windows10_0.vhdx</code>中的系统，然后重启，进入原系统，如果不运行其他文件，就能保持在原系统。</li>
+<li>从原系统进入自动还原系统，运行to1。</li>
+<li>在自动还原系统中作持久化操作，运行to0，在这个系统中做的操作可以永久保存，完成操作后，重启电脑进入原系统，运行to1进入自动还原系统。</li>
+</ol>
+<!-- flag of hidden posts -->
+    </div>
+
+    
+    
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>再接再厉-------------</div>
+    
+</div>
+
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text">一、工作原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%B7%A5%E5%85%B7%E5%87%86%E5%A4%87"><span class="nav-number">2.</span> <span class="nav-text">二、工具准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%AE%89%E8%A3%85%E6%AD%A5%E9%AA%A4"><span class="nav-number">3.</span> <span class="nav-text">三、安装步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">四、使用方法</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Haojie"
+      src="/images/smile.jpg">
+  <p class="site-author-name" itemprop="name">Haojie</p>
+  <div class="site-description" itemprop="description">我的电脑折腾记录</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/haojie7366" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;haojie7366" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:haojie7366@gmail.com" title="E-Mail → mailto:haojie7366@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Haojie</span>
+</div><div>
+<!--添加网站运行时间-->
+<span>小破站已经在风雨中度过了</span>
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    function createtime() {
+        const startTime = '06/30/2023 00:00:00',
+            start = new Date(startTime)
+        let mill = new Date() - start,
+            seconds = Math.floor(mill / 1000),
+            mins = Math.floor(seconds / 60),
+            hours = Math.floor(mins / 60),
+            days = Math.floor(hours / 24)
+        const time = {
+            seconds: seconds - mins * 60,
+            mins: mins - hours * 60,
+            hours: hours - days * 24,
+        }
+        for (const k in time) {
+            time[k] = `${time[k]}`.padStart(2, '0')
+        }
+        document.getElementById("timeDate").innerHTML = ` ${days} 天`
+        document.getElementById("times").innerHTML = ` ${time.hours} 小时 ${time.mins} 分 ${time.seconds} 秒`
+    }
+    setInterval(createtime, 500)
+</script>
+</div>
+
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+<script src="/js/bookmark.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/clicklove.js"></script>
+

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在跳转</title>
+    <script>
+        // 获取URL中的查询参数
+        function getQueryParams() {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const params = {};
+            urlParams.forEach((value, key) => {
+                params[key] = value;
+            });
+            return params;
+        }
+
+        // 从配置文件读取IP和端口，并跳转
+        function redirectBasedOnParams() {
+            const params = getQueryParams();
+            let path = params['path'] ? `/${params['path']}` : '';  // 从参数中读取路径
+
+            // 使用 fetch 从 ipnat.txt 读取 IP 和端口
+            fetch('ipnat.txt')
+                .then(response => response.text())
+                .then(data => {
+                    const [ip, port] = data.trim().split(':');  // 解析IP和端口
+
+                    if (ip && port) {
+                        const targetUrl = `http://${ip}:${port}${path}`;  // 组合最终的URL
+                        window.location.href = targetUrl;  // 跳转到组合后的地址
+                    } else {
+                        document.getElementById('error').innerText = '无效的配置文件';
+                    }
+                })
+                .catch(error => {
+                    console.error('读取配置文件失败:', error);
+                    document.getElementById('error').innerText = '无法读取配置文件';
+                });
+        }
+
+        window.onload = redirectBasedOnParams;
+    </script>
+</head>
+<body>
+    <h1>正在跳转...</h1>
+    <p id="error"></p>
+</body>
+</html>
