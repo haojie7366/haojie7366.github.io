@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件下载</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        .redirect-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .redirect-button:hover {
+            background-color: #0056b3;
+        }
+        .error {
+            color: red;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>----文件下载----</h1>
+
+    <p><strong>文件名:</strong> <span id="fileName">Unknown</span></p>
+
+    <!-- 提供网页跳转按钮 -->
+    <a id="redirectLink" class="redirect-button" href="#" target="_blank">前往下载</a>
+
+    <p id="errorMessage" class="error"></p>
+</div>
+
+<script>
+    // 获取 URL 参数
+    const urlParams = new URLSearchParams(window.location.search);
+    const filePath = urlParams.get('path');
+
+    // 提取文件名
+    function extractFileName(path) {
+        return path.split('/').pop();
+    }
+
+    // 读取 ipnat.txt 文件，返回 IP 和端口
+    async function fetchIpAndPort() {
+        try {
+            const response = await fetch('ipnat.txt');
+            const text = await response.text();
+            return text.trim(); // 假设文件内容是类似 "1.1.1.1:8080" 的格式
+        } catch (error) {
+            console.error('Failed to load ipnat.txt:', error);
+            return null;
+        }
+    }
+
+    // 组合 URL 并更新页面信息
+    async function updateRedirectLink() {
+        const ipAndPort = await fetchIpAndPort();
+
+        if (filePath && ipAndPort) {
+            const fileName = extractFileName(filePath);
+            const redirectUrl = `http://${ipAndPort}/sharefile?path=${filePath}`;
+
+            // 更新文件名和跳转链接
+            document.getElementById('fileName').textContent = fileName;
+            document.getElementById('redirectLink').setAttribute('href', redirectUrl);
+        } else {
+            document.getElementById('errorMessage').textContent = 'File path or IP address is missing or incorrect.';
+            document.getElementById('redirectLink').style.display = 'none';
+        }
+    }
+
+    // 页面加载时执行
+    updateRedirectLink();
+</script>
+
+</body>
+</html>
