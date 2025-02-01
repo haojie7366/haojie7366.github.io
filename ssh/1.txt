@@ -1,1 +1,1 @@
-39.190.132.98 -p 2431 -o StrictHostKeyChecking=no
+39.190.132.92 -p 1061 -o StrictHostKeyChecking=no
