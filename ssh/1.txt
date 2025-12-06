@@ -1,1 +1,1 @@
-111.1.148.248 -p 36742 -o StrictHostKeyChecking=no
+111.1.148.48 -p 2890 -o StrictHostKeyChecking=no
