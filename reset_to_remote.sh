@@ -1,28 +1,34 @@
 #!/bin/bash
-# 脚本：reset_to_remote.sh
-# 用途：舍弃所有本地更改，将本地分支完全同步到远程最新版本。
-
 set -e
 
+# 1. 确保在分支上
 CURRENT_BRANCH=$(git branch --show-current)
 if [ -z "$CURRENT_BRANCH" ]; then
-    echo "错误：不在任何分支上，请先切换到目标分支。"
-    exit 1
+    DEFAULT_BRANCH=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
+    git checkout -B "$DEFAULT_BRANCH" "origin/$DEFAULT_BRANCH" 2>/dev/null || git checkout "$DEFAULT_BRANCH"
+    CURRENT_BRANCH="$DEFAULT_BRANCH"
 fi
 
-# 若有未完成的 rebase/merge，先中止
+# 2. 中止未完成的 rebase/merge
 if [ -d .git/rebase-merge ] || [ -d .git/rebase-apply ] || [ -f .git/MERGE_HEAD ]; then
-    echo "检测到未完成的 rebase/merge，正在中止..."
     git rebase --abort 2>/dev/null || git merge --abort 2>/dev/null || true
 fi
 
-# 获取远程最新
-git fetch origin
+# 3. 拉取并变基（冲突时采用本地版本）
+git pull --rebase --autostash -X ours origin "$CURRENT_BRANCH" || {
+    echo "变基失败，强制重置到远程并重新应用本地更改..."
+    git rebase --abort 2>/dev/null || true
+    git fetch origin
+    git reset --hard "origin/$CURRENT_BRANCH"
+    git stash pop 2>/dev/null || true
+}
 
-# 强制重置到远程分支，丢弃所有本地更改和未推送提交
-git reset --hard "origin/$CURRENT_BRANCH"
+# 4. 提交
+git add --all
+if ! git diff --cached --quiet; then
+    git commit -m "Auto commit: $(date)"
+fi
 
-# 清理未跟踪文件（可选，若想完全干净可取消下一行注释）
-# git clean -fd
-
-echo "✅ 已同步到远程最新版本，所有本地更改已丢弃。"
+# 5. 推送
+git push --force-with-lease origin "$CURRENT_BRANCH"
+echo "✅ 推送成功！"
