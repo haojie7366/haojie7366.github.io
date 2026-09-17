@@ -6,5 +6,5 @@ echo "$1:$2" >ssh/6
 echo "$1:$2" >ssh/6.txt
 sleep 30
 scp ssh/6 me@192.168.2.3:haojie7366.github.io/ssh
-scp ssh/6.txt me@192.168.2.3:haojie7366.github.io/ssh
+#scp ssh/6.txt me@192.168.2.3:haojie7366.github.io/ssh
 #./push.sh
